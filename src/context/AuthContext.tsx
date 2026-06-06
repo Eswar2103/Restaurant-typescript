@@ -19,14 +19,14 @@ type SupabaseAuthResult = {
   name: string | null;
 };
 
-type ContextType = {
+type AuthContextType = {
   user: UserSession | null;
   role: string | null;
   loading: boolean;
   name: string | null;
 };
 
-const initContext: ContextType = {
+const initContext: AuthContextType = {
   user: null,
   role: null,
   loading: false,
@@ -108,3 +108,5 @@ export default function AuthPrvider({ children }: ChildrenType) {
     </AuthContext.Provider>
   );
 }
+
+export { AuthContext };

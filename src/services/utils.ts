@@ -1,6 +1,6 @@
 async function getCityFromCoordinates(
-  latitude: string,
-  longitude: string,
+  latitude: number,
+  longitude: number,
 ): Promise<string | null> {
   try {
     const response = await fetch(

@@ -1,19 +1,12 @@
 import { supabase } from "./supabase";
 import type { Database } from "../types/database.types";
 
-type RestaurantInsert = Database["public"]["Tables"]["restaurants"]["Insert"];
+export type RestaurantInsert =
+  Database["public"]["Tables"]["restaurants"]["Insert"];
 
-type RestaurantData = Database["public"]["Tables"]["restaurants"]["Row"];
+export type RestaurantData = Database["public"]["Tables"]["restaurants"]["Row"];
 type ReviewsData = Database["public"]["Tables"]["reviews"]["Row"];
 type RestaurantWithReviews = RestaurantData & {
-  reviews: Pick<ReviewsData, "rating">[];
-};
-
-type RestaurantDataFewValues = Pick<
-  RestaurantData,
-  "id" | "image_url" | "city" | "name"
->;
-type RestaurantWithReviewsWithFewValues = RestaurantDataFewValues & {
   reviews: Pick<ReviewsData, "rating">[];
 };
 
@@ -30,6 +23,37 @@ type ReviewDataOnly = Omit<
 type RestaurantDataUpdate =
   Database["public"]["Tables"]["restaurants"]["Update"];
 
+export type fetchRestaurantData = {
+  restaurant: RestaurantWithReviews & {
+    averageRating?: number;
+    totalReviews?: number;
+  };
+};
+
+export type fetchAllRestaurantsData = {
+  restaurants: Array<fetchRestaurantData["restaurant"]>;
+  totalCount: number;
+  totalPages: number;
+};
+
+type fetchRestaurantByIdData = RestaurantData & {
+  name: string;
+  owner: {
+    name: string;
+  };
+} & {
+  reviews: Array<
+    ReviewsData & {
+      reviewer: {
+        name: string;
+      };
+    }
+  >;
+} & {
+  averageRating: number;
+  totalReviews: number;
+};
+
 async function addRestaurant(restaurantData: RestaurantInsert) {
   const { error } = await supabase
     .from("restaurants")
@@ -43,7 +67,11 @@ async function addRestaurant(restaurantData: RestaurantInsert) {
   }
 }
 
-async function getOwnRestaurants(_c: string, page = 1, pageSize = 10) {
+async function getOwnRestaurants(
+  city: string | null,
+  page = 1,
+  pageSize = 10,
+): Promise<fetchAllRestaurantsData> {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
   const { data, error } = await supabase.auth.getUser();
@@ -74,13 +102,17 @@ async function getOwnRestaurants(_c: string, page = 1, pageSize = 10) {
   };
 }
 
-async function fetchAllRestaurants(city: string, page = 1, pageSize = 10) {
+async function fetchAllRestaurants(
+  city: string | null,
+  page = 1,
+  pageSize = 10,
+): Promise<fetchAllRestaurantsData> {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   let query = supabase
     .from("restaurants")
-    .select("id, image_url,city, name, reviews(rating)", { count: "exact" })
+    .select("*, reviews(rating)", { count: "exact" })
     .range(from, to);
 
   if (city) {
@@ -98,9 +130,7 @@ async function fetchAllRestaurants(city: string, page = 1, pageSize = 10) {
   };
 }
 
-function calculateReviews(
-  data: RestaurantWithReviewsWithFewValues[] | RestaurantWithReviews[],
-) {
+function calculateReviews(data: RestaurantWithReviews[]) {
   return data.map((restaurant) => {
     if (!restaurant.reviews) {
       restaurant.reviews = [];
@@ -119,11 +149,13 @@ function calculateReviews(
   });
 }
 
-async function fetchRestaurantByIdWithReviews(id: string) {
+async function fetchRestaurantByIdWithReviews(
+  id: string,
+): Promise<fetchRestaurantByIdData> {
   const { data, error } = await supabase
     .from("restaurants")
     .select(
-      "*,owner:users!owner_id(name), reviews(rating, comment, reviewer_id, created_at, reviewer:users!reviewer_id(name))",
+      "*,owner:users!owner_id(name), reviews(*, reviewer:users!reviewer_id(name))",
     )
     .eq("id", id)
     .maybeSingle();
@@ -213,7 +245,7 @@ async function deleteRestaurant(restaurantId: string) {
   }
 }
 
-async function getCities() {
+async function getCities(): Promise<string[]> {
   const { data, error } = await supabase.rpc("get_distinct_cities");
   if (error) {
     throw error;

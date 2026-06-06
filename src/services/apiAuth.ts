@@ -1,7 +1,7 @@
 import type { Session, User, WeakPassword } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
-type RegisterUser = {
+export type RegisterUser = {
   email: string;
   password: string;
   name: string;
@@ -13,7 +13,7 @@ type RegisterUserResponse = Promise<{
   session: Session | null;
 }>;
 
-type LoginUser = {
+export type LoginUser = {
   email: string;
   password: string;
 };
@@ -75,7 +75,7 @@ async function login({ email, password }: LoginUser): LoginUserResponse {
   return { ...data, role: userData.role };
 }
 
-async function signOut() {
+async function signOut(): Promise<void> {
   const { error } = await supabase.auth.signOut();
   if (error) {
     throw error;

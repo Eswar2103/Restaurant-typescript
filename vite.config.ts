@@ -14,5 +14,17 @@ export default defineConfig({
   },
   build: {
     cssCodeSplit: true,
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("@supabase")) return "vendor-supabase";
+          if (id.includes("@tanstack/react-query")) return "vendor-query";
+          if (id.includes("@tanstack/react-router")) return "vendor-router";
+          if (id.includes("node_modules/react")) return "vendor-react";
+          if (id.includes("react-toastify")) return "vendor-ui";
+        },
+      },
+    },
   },
 });

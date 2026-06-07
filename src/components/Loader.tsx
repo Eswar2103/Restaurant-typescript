@@ -13,9 +13,11 @@ function SkeletonCard() {
 
 function AuthSkeletonCard() {
   return (
-    <div className="flex flex-col justify-between items-center py-20 rounded-xl h-80 w-150 overflow-hidden bg-gray-200">
-      <div className="h-12 w-120 shimmer rounded-xl" />
-      <div className="h-12 w-120 shimmer rounded-xl" />
+    <div className="flex justify-center items-center">
+      <div className="flex flex-col justify-between items-center py-20 rounded-xl h-80 w-150 overflow-hidden bg-gray-200">
+        <div className="h-12 w-120 shimmer rounded-xl" />
+        <div className="h-12 w-120 shimmer rounded-xl" />
+      </div>
     </div>
   );
 }

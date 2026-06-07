@@ -1,10 +1,17 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from "vite";
 import eslint from "vite-plugin-eslint2";
-import react from '@vitejs/plugin-react';
+import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), eslint(), tailwindcss()],
-})
-
+  server: {
+    host: true,
+    port: 3001,
+    open: true,
+  },
+  build: {
+    cssCodeSplit: true,
+  },
+});

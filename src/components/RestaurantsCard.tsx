@@ -43,13 +43,8 @@ export default function RestaurantsCard({
     queryFn: () => queryFunction(selectedCity, page, pageSize),
     staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
-    initialData: {
-      restaurants: [],
-      totalPages: 0,
-      totalCount: 0,
-    },
   });
-  if (isLoading)
+  if (isLoading || !restaurantsData)
     return (
       <div className="grid-auto-fit w-full gap-y-16 gap-x-8">
         {Array.from({ length: 6 }).map((_, i) => (
@@ -57,6 +52,7 @@ export default function RestaurantsCard({
         ))}
       </div>
     );
+
   if (isError || error)
     return <div>Error occurred while fetching restaurants.</div>;
 

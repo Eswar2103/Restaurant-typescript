@@ -28,12 +28,17 @@ function RestaurantView() {
 
   if (isLoading) return <SkeletonCard />;
   if (isError) {
-    if (error?.message?.includes("Restaurant id is required")) {
+    const message = error?.message ?? "";
+
+    if (/restaurant id is required/i.test(message)) {
       toast.error("Invalid restaurant ID");
+    } else if (/restaurant not found/i.test(message)) {
+      navigate("/restaurants");
+      toast.error("Restaurant not found");
     } else {
       toast.error("Unable to fetch restaurant details.");
     }
-    return;
+    return null;
   }
 
   return (

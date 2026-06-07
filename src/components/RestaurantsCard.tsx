@@ -10,6 +10,12 @@ import type {
   fetchRestaurantData,
 } from "../services/apiRestaurants";
 
+type RestaurantData = {
+  restaurant: fetchRestaurantData["restaurant"];
+  loading: "eager" | "lazy" | undefined;
+  fetchPriority: "high" | "low" | "auto" | undefined;
+};
+
 type RestaurantCard = {
   path: string;
   cities?: string[];
@@ -83,9 +89,13 @@ export default function RestaurantsCard({
       <div
         className={`grid-auto-fit justify-center gap-y-16 gap-x-8 transition-opacity duration-500 ${isFetching ? "opacity-50" : "opacity-100"}`}
       >
-        {restaurants.map((r) => (
+        {restaurants.map((r, i) => (
           <Link key={r.id} to={`/${path}/${r.id}`}>
-            <RestaurantCard restaurant={r} />
+            <RestaurantCard
+              restaurant={r}
+              loading={i < 2 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+            />
           </Link>
         ))}
       </div>
@@ -100,13 +110,19 @@ export default function RestaurantsCard({
   );
 }
 
-function RestaurantCard({ restaurant }: fetchRestaurantData) {
+function RestaurantCard({
+  restaurant,
+  loading,
+  fetchPriority,
+}: RestaurantData) {
   return (
     <div className="border border-none rounded-xl shadow-2xl h-[330px] hover:-translate-y-1.5 transition-all duration-500">
       <img
         src={restaurant.image_url}
         alt="image"
         className="rounded-t-xl max-h-[245px] w-[350px]"
+        loading={loading}
+        fetchPriority={fetchPriority}
       />
       <div className="flex flex-col gap-1.5 px-6 mt-2">
         <p className="capitalize text-lg  font-bold text-black/70">

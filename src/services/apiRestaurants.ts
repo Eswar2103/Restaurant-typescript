@@ -15,11 +15,6 @@ export type ReviewInsertDataOnly = Omit<
   "restaurant_id" | "reviewer_id"
 >;
 
-type ReviewDataOnly = Omit<
-  Database["public"]["Tables"]["reviews"]["Row"],
-  "restaurant_id" | "reviewer_id"
->;
-
 type RestaurantDataUpdate =
   Database["public"]["Tables"]["restaurants"]["Update"];
 
@@ -70,7 +65,7 @@ async function addRestaurant(restaurantData: RestaurantInsert) {
 }
 
 async function getOwnRestaurants(
-  city: string | null,
+  _city: string | null,
   page = 1,
   pageSize = 10,
 ): Promise<FetchAllRestaurantsData> {

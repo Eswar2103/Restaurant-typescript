@@ -1,4 +1,3 @@
-import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useAuth } from "./context/useAuth";
 
@@ -76,6 +75,14 @@ function RestaurantViewPage() {
   );
 }
 
+function HomePage() {
+  return (
+    <Suspense fallback={<SkeletonCard />}>
+      <Home />
+    </Suspense>
+  );
+}
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -84,7 +91,7 @@ function App() {
       children: [
         {
           index: true,
-          element: <Home />,
+          element: <HomePage />,
         },
         {
           path: "/login",

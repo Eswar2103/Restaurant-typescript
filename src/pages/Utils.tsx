@@ -131,7 +131,7 @@ function Banner() {
         </p>
         <a
           className="flex justify-center uppercase text-blue-500 hover:text-blue-600 hover:underline font-bold"
-          href="https://github.com/Eswar2103/Restaurant"
+          href="https://github.com/Eswar2103/Restaurant-typescript"
           target="_blank"
           rel="noreferrer"
         >

@@ -10,7 +10,7 @@ type RestaurantWithReviews = RestaurantData & {
   reviews: Pick<ReviewsData, "rating">[];
 };
 
-type ReviewInsertDataOnly = Omit<
+export type ReviewInsertDataOnly = Omit<
   Database["public"]["Tables"]["reviews"]["Insert"],
   "restaurant_id" | "reviewer_id"
 >;
@@ -30,29 +30,31 @@ export type fetchRestaurantData = {
   };
 };
 
-export type fetchAllRestaurantsData = {
+export type FetchAllRestaurantsData = {
   restaurants: Array<fetchRestaurantData["restaurant"]>;
   totalCount: number;
   totalPages: number;
 };
 
-type fetchRestaurantByIdData = RestaurantData & {
+export type SingleReview = ReviewsData & {
+  reviewer: {
+    name: string;
+  };
+};
+
+export type Reviews = {
+  reviews: Array<SingleReview>;
+};
+
+export type FetchRestaurantByIdData = RestaurantData & {
   name: string;
   owner: {
     name: string;
   };
-} & {
-  reviews: Array<
-    ReviewsData & {
-      reviewer: {
-        name: string;
-      };
-    }
-  >;
-} & {
-  averageRating: number;
-  totalReviews: number;
-};
+} & Reviews & {
+    averageRating: number;
+    totalReviews: number;
+  };
 
 async function addRestaurant(restaurantData: RestaurantInsert) {
   const { error } = await supabase
@@ -71,7 +73,7 @@ async function getOwnRestaurants(
   city: string | null,
   page = 1,
   pageSize = 10,
-): Promise<fetchAllRestaurantsData> {
+): Promise<FetchAllRestaurantsData> {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
   const { data, error } = await supabase.auth.getUser();
@@ -106,7 +108,7 @@ async function fetchAllRestaurants(
   city: string | null,
   page = 1,
   pageSize = 10,
-): Promise<fetchAllRestaurantsData> {
+): Promise<FetchAllRestaurantsData> {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -151,7 +153,7 @@ function calculateReviews(data: RestaurantWithReviews[]) {
 
 async function fetchRestaurantByIdWithReviews(
   id: string,
-): Promise<fetchRestaurantByIdData> {
+): Promise<FetchRestaurantByIdData> {
   const { data, error } = await supabase
     .from("restaurants")
     .select(
@@ -184,7 +186,7 @@ async function fetchRestaurantByIdWithReviews(
 async function addReview(
   restaurantId: string,
   reviewerId: string,
-  reviewData: ReviewDataOnly,
+  reviewData: ReviewInsertDataOnly,
 ) {
   const { error } = await supabase.from("reviews").insert({
     restaurant_id: restaurantId,

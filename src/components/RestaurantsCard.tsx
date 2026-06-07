@@ -6,7 +6,7 @@ import { RatingStars } from "../pages/Utils";
 import Pagination from "./Pagination";
 import { SkeletonCard } from "../components/Loader";
 import type {
-  fetchAllRestaurantsData,
+  FetchAllRestaurantsData,
   fetchRestaurantData,
 } from "../services/apiRestaurants";
 
@@ -17,7 +17,7 @@ type RestaurantCard = {
     city: string | null,
     page: number,
     pageSize: number,
-  ) => Promise<fetchAllRestaurantsData>;
+  ) => Promise<FetchAllRestaurantsData>;
   queryKey: string;
 };
 
